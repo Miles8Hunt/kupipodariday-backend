@@ -1,6 +1,8 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, ManyToOne } from 'typeorm';
 import { BaseEntity } from 'src/entities/base.entity';
 import { IsBoolean, IsNumber } from 'class-validator';
+import { User } from 'src/users/entities/user.entity';
+import { Wish } from 'src/wishes/entities/wish.entity';
 
 @Entity()
 export class Offer extends BaseEntity {
@@ -12,9 +14,9 @@ export class Offer extends BaseEntity {
   @IsBoolean()
   hidden: boolean;
 
-  // определить тип связи между сущностями
-  user: [];
+  @ManyToOne(() => User, (user) => user.offers)
+  user: User;
 
-  // определить тип связи между сущностями
-  item: [];
+  @ManyToOne(() => Wish, (wish) => wish.offers)
+  item: Wish;
 }

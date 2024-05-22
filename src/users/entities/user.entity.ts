@@ -1,6 +1,9 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import { BaseEntity } from 'src/entities/base.entity';
 import { IsString, IsEmail, IsUrl, Length } from 'class-validator';
+import { Wish } from 'src/wishes/entities/wish.entity';
+import { Offer } from 'src/offers/entities/offer.entity';
+import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -26,12 +29,12 @@ export class User extends BaseEntity {
   @IsString()
   password: string;
 
-  // определить тип связи между сущностями
-  wishes: [];
+  @OneToMany(() => Wish, (wish) => wish.owner)
+  wishes: Wish[];
 
-  // определить тип связи между сущностями
-  offers: [];
+  @OneToMany(() => Offer, (offer) => offer.user)
+  offers: Offer[];
 
-  // определить тип связи между сущностями
-  wishlists: [];
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.owner)
+  wishlists: Wishlist[];
 }
