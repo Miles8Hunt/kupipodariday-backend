@@ -15,5 +15,6 @@ import { UsersModule } from '../users/users.module';
   ],
   controllers: [WishesController],
   providers: [WishesService],
+  exports: [WishesService],
 })
 export class WishesModule {}

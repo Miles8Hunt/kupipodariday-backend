@@ -1,34 +1,34 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, UseGuards, Get, Req, Post, Body, Param, Delete } from '@nestjs/common';
+import { JwtGuard } from '../auth/guard/jwt.guard';
 import { WishlistsService } from './wishlists.service';
+import { Wishlist } from './entities/wishlist.entity';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
-import { UpdateWishlistDto } from './dto/update-wishlist.dto';
+// import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 
+@UseGuards(JwtGuard)
 @Controller('wishlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
   @Post()
-  create(@Body() createWishlistDto: CreateWishlistDto) {
-    return this.wishlistsService.create(createWishlistDto);
+  async create(@Req() { user: { id } }, @Body() createWishlistDto: CreateWishlistDto): Promise<Wishlist> {
+    return await this.wishlistsService.create(id, createWishlistDto);
   }
 
+  // добавить перехватчик (wish)
   @Get()
-  findAll() {
-    return this.wishlistsService.findAll();
+  async findAll(): Promise<Wishlist[]> {
+    return await this.wishlistsService.findAll();
   }
 
+  // добавить перехватчик (wish)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wishlistsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWishlistDto: UpdateWishlistDto) {
-    return this.wishlistsService.update(+id, updateWishlistDto);
+  async findById(@Param('id') id: number): Promise<Wishlist> {
+    return await this.wishlistsService.findById(id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishlistsService.remove(+id);
+  async delete(@Req() { user: { id } }, @Param('id') wishListId: number) {
+    return await this.wishlistsService.remove(id, wishListId);
   }
 }

@@ -17,5 +17,6 @@ import { WishesModule } from '../wishes/wishes.module';
   ],
   controllers: [WishlistsController],
   providers: [WishlistsService],
+  exports: [WishlistsService],
 })
 export class WishlistsModule {}

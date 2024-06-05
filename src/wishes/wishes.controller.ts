@@ -1,34 +1,46 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, UseGuards, Get, Req, Post, Body, Param, Delete } from '@nestjs/common';
+import { JwtGuard } from '../auth/guard/jwt.guard';
 import { WishesService } from './wishes.service';
+import { Wish } from './entities/wish.entity';
 import { CreateWishDto } from './dto/create-wish.dto';
-import { UpdateWishDto } from './dto/update-wish.dto';
+// import { UpdateWishDto } from './dto/update-wish.dto';
 
 @Controller('wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
+  @UseGuards(JwtGuard)
   @Post()
-  create(@Body() createWishDto: CreateWishDto) {
-    return this.wishesService.create(createWishDto);
+  async createWish(@Req() { user: { id } }, @Body() createWishDto: CreateWishDto): Promise<Wish> {
+    return await this.wishesService.create(id, createWishDto);
   }
 
-  @Get()
-  findAll() {
-    return this.wishesService.findAll();
+  @Get('last')
+  async findLastWishes(): Promise<Wish[]> {
+    return await this.wishesService.findLast();
   }
 
+  @Get('top')
+  async findTopWishes(): Promise<Wish[]> {
+    return await this.wishesService.findTop();
+  }
+
+  // добавить перехватчик (wish)
+  @UseGuards(JwtGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wishesService.findOne(+id);
+  async getWishById(@Req() { user: { id } }, @Param('id') wishId: number): Promise<Wish> {
+    return await this.wishesService.findWishInfo(id, wishId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
-    return this.wishesService.update(+id, updateWishDto);
-  }
-
+  @UseGuards(JwtGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishesService.remove(+id);
+  async delete(@Req() { user: { id } }, @Param('id') wishId: number) {
+    return await this.wishesService.remove(id, wishId);
+  }
+
+  @UseGuards(JwtGuard)
+  @Post(':id/copy')
+  async copyWish(@Req() { user: { id } }, @Param(':id') wishId: number) {
+    return await this.wishesService.copyWish(id, wishId);
   }
 }
