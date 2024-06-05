@@ -1,9 +1,9 @@
-import { Controller, UseGuards, Get, Req, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, UseGuards, Get, Req, Post, Body, Param, Delete, UseInterceptors } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { WishesService } from './wishes.service';
 import { Wish } from './entities/wish.entity';
 import { CreateWishDto } from './dto/create-wish.dto';
-// import { UpdateWishDto } from './dto/update-wish.dto';
+import { WishInterceptor } from '../interceptors/wish.interceptor';
 
 @Controller('wishes')
 export class WishesController {
@@ -25,7 +25,7 @@ export class WishesController {
     return await this.wishesService.findTop();
   }
 
-  // добавить перехватчик (wish)
+  @UseInterceptors(WishInterceptor)
   @UseGuards(JwtGuard)
   @Get(':id')
   async getWishById(@Req() { user: { id } }, @Param('id') wishId: number): Promise<Wish> {

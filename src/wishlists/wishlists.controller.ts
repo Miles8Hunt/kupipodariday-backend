@@ -1,9 +1,9 @@
-import { Controller, UseGuards, Get, Req, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, UseGuards, Get, Req, Post, Body, Param, Delete, UseInterceptors } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { WishlistsService } from './wishlists.service';
 import { Wishlist } from './entities/wishlist.entity';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
-// import { UpdateWishlistDto } from './dto/update-wishlist.dto';
+import { WishInterceptor } from '../interceptors/wish.interceptor';
 
 @UseGuards(JwtGuard)
 @Controller('wishlists')
@@ -15,13 +15,13 @@ export class WishlistsController {
     return await this.wishlistsService.create(id, createWishlistDto);
   }
 
-  // добавить перехватчик (wish)
+  @UseInterceptors(WishInterceptor)
   @Get()
   async findAll(): Promise<Wishlist[]> {
     return await this.wishlistsService.findAll();
   }
 
-  // добавить перехватчик (wish)
+  @UseInterceptors(WishInterceptor)
   @Get(':id')
   async findById(@Param('id') id: number): Promise<Wishlist> {
     return await this.wishlistsService.findById(id);
