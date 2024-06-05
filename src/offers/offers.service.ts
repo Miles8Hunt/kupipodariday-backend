@@ -5,7 +5,8 @@ import { Offer } from './entities/offer.entity';
 import { UsersService } from '../users/users.service';
 import { WishesService } from '../wishes/wishes.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
-//import { UpdateOfferDto } from './dto/update-offer.dto';
+import { ErrorCode } from 'src/exceptions/error-codes';
+import { ServerException } from 'src/exceptions/server.exception';
 
 @Injectable()
 export class OffersService {
@@ -28,20 +29,20 @@ export class OffersService {
       const wish = await this.wishesService.findById(createOfferDto.itemId);
 
       if (userId === wish.owner.id) {
-      //  выбросить ошибку
+        throw new ServerException(ErrorCode.OfferForbidden);
       }
 
       const user = await this.usersService.findById(wish.owner.id);
       const wishSum = Number((wish.raised + createOfferDto.amount).toFixed(2));
 
       if (wishSum > wish.price) {
-      //  выбросить ошибку
+        throw new ServerException(ErrorCode.OfferRaisedForbidden);
       }
 
       await this.wishesService.updateRaised(createOfferDto.itemId, { raised: wishSum });
       const offer = await this.offersRepository.save({ ...createOfferDto, wish, user }); 
       await queryRunner.commitTransaction();
-      
+
       delete wish.owner.password;
       delete user.password;
 

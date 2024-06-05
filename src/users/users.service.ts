@@ -5,6 +5,8 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { HashService } from 'src/hash/hash.service';
+import { ErrorCode } from 'src/exceptions/error-codes';
+import { ServerException } from 'src/exceptions/server.exception';
 
 @Injectable()
 export class UsersService {
@@ -21,7 +23,7 @@ export class UsersService {
       return await this.usersRepository.save(userWithHash);
     } catch (err) {
       if (err instanceof QueryFailedError) {
-      //  выбросить ошибку
+        throw new ServerException(ErrorCode.UserAlreadyExists);
       }
     }
   }
@@ -29,7 +31,7 @@ export class UsersService {
   async findById(id: number): Promise<User> {
     const user = await this.usersRepository.findOneBy({ id });
     if (!user) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.UserNotFound);
     }
     return user;
   }
@@ -37,7 +39,7 @@ export class UsersService {
   async findByUsername(username: string): Promise<User> {
     const user = await this.usersRepository.findOneBy({ username });
     if (!user) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.UserNotFound);
     }
     return user;
   }
@@ -45,7 +47,7 @@ export class UsersService {
   async findByEmail(email: string): Promise<User> {
     const user = await this.usersRepository.findOneBy({ email });
     if (!user) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.UserNotFound);
     }
     return user;
   }
@@ -58,7 +60,7 @@ export class UsersService {
       : await this.findByUsername(query);
 
     if (!user) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.UserNotFound);
     }
     return [user];
   }
@@ -67,7 +69,7 @@ export class UsersService {
     const { wishes } = await this.usersRepository.findOne({ where: { id }, relations });
 
     if (!wishes) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.WishNotFound);
     }
     return wishes;
   }
@@ -80,7 +82,7 @@ export class UsersService {
     const user = await this.usersRepository.update(id, newUserData);
     
     if (user.affected === 0) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.DataUpdateError);
     }
     return this.findById(id);
   }

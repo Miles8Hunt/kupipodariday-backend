@@ -4,7 +4,8 @@ import { Repository, DataSource } from 'typeorm';
 import { Wish } from './entities/wish.entity';
 import { UsersService } from 'src/users/users.service';
 import { CreateWishDto } from './dto/create-wish.dto';
-//import { UpdateWishDto } from './dto/update-wish.dto';
+import { ErrorCode } from 'src/exceptions/error-codes';
+import { ServerException } from 'src/exceptions/server.exception';
 
 @Injectable()
 export class WishesService {
@@ -29,7 +30,7 @@ export class WishesService {
     });
     
     if (!wish) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.WishNotFound);
     }
     return wish;
   }
@@ -42,7 +43,7 @@ export class WishesService {
     });
 
     if (!wishes) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.WishesNotFound);
     }
     return wishes;
   }
@@ -55,7 +56,7 @@ export class WishesService {
     });
 
     if (!wishes) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.WishesNotFound);
     }
     return wishes;
   }
@@ -67,7 +68,7 @@ export class WishesService {
     });
 
     if (!wish) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.WishNotFound);
     }
 
     if (userId === wish.owner.id) {
@@ -86,7 +87,7 @@ export class WishesService {
       .getMany();
 
     if (!wishes) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.WishesNotFound);
     }
     return wishes;
   }
@@ -95,15 +96,15 @@ export class WishesService {
     const wish = await this.findById(wishId);
 
     if (userId !== wish.owner.id) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.WishUpdateForbidden);
     }
     if (updateData.hasOwnProperty('price') && wish.raised > 0) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.WishUpdateSumForbidden);
     }
-    const updatedWish = await this.wishesRepository.update(wishId, updateData);
 
+    const updatedWish = await this.wishesRepository.update(wishId, updateData);
     if (updatedWish.affected === 0) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.DataUpdateError);
     }
   }
 
@@ -111,7 +112,7 @@ export class WishesService {
     const wish = await this.wishesRepository.update(id, updateData);
 
     if (wish.affected === 0) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.DataUpdateError);
     }
   }
 
@@ -119,7 +120,7 @@ export class WishesService {
     const wish = await this.findById(wishId);
 
     if (userId !== wish.owner.id) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.WishDeleteForbidden);
     }
     await this.wishesRepository.delete(wishId);
   }

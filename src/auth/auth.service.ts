@@ -3,6 +3,8 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { HashService } from '../hash/hash.service';
 import { User } from '../users/entities/user.entity';
+import { ErrorCode } from 'src/exceptions/error-codes';
+import { ServerException } from 'src/exceptions/server.exception';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +25,7 @@ export class AuthService {
     const user = await this.usersService.findByUsername(username);
 
     if (!user) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.IncorrectLoginOrPassword);
     }
     const comparePassword = await this.hashService.comparePassword(password, user.password);
 

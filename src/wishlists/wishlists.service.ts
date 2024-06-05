@@ -5,7 +5,8 @@ import { Wishlist } from './entities/wishlist.entity';
 import { WishesService } from 'src/wishes/wishes.service';
 import { UsersService } from 'src/users/users.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
-// import { UpdateWishlistDto } from './dto/update-wishlist.dto';
+import { ErrorCode } from 'src/exceptions/error-codes';
+import { ServerException } from 'src/exceptions/server.exception';
 
 @Injectable()
 export class WishlistsService {
@@ -46,7 +47,7 @@ export class WishlistsService {
     });
 
     if (!wishlists) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.WishlistNotFound);
     }
     return wishlists;
   }
@@ -58,7 +59,7 @@ export class WishlistsService {
     });
 
     if (!wishlist) {
-    //  выбросить ошибку
+      throw new ServerException(ErrorCode.WishlistNotFound);
     }
     return wishlist;
   }
@@ -66,8 +67,8 @@ export class WishlistsService {
   async remove(userId: number, wishListId: number) {
     const wishlist = await this.findById(wishListId);
 
-    if (userId !== wishlist.owner.id) {
-    //  выбросить ошибку
+    if (userId !== wishlist.owner.id) { 
+      throw new ServerException(ErrorCode.WishlistDeleteForbidden);
     }
     return await this.wishlistsRepository.delete(wishListId);
   }
