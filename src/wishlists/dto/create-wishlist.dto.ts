@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, Length, IsOptional, IsUrl, IsArray, IsInt } from 'class-validator';
+import { IsNotEmpty, IsString, Length, /*IsOptional,*/ IsUrl, IsArray, IsInt } from 'class-validator';
 
 export class CreateWishlistDto {
   @IsNotEmpty()
@@ -6,10 +6,10 @@ export class CreateWishlistDto {
   @Length(1, 250)
   name: string;
 
-  @IsOptional()
+  /*@IsOptional()
   @IsString()
   @Length(1, 1500)
-  description: string;
+  description: string;*/
 
   @IsNotEmpty()
   @IsUrl()

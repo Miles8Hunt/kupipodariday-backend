@@ -40,7 +40,7 @@ export class OffersService {
       }
 
       await this.wishesService.updateRaised(createOfferDto.itemId, { raised: wishSum });
-      const offer = await this.offersRepository.save({ ...createOfferDto, wish, user }); 
+      const offer = await this.offersRepository.save({ ...createOfferDto, user, item: wish }); 
       await queryRunner.commitTransaction();
 
       delete wish.owner.password;

@@ -116,13 +116,13 @@ export class WishesService {
     }
   }
 
-  async remove(wishId: number, userId: number): Promise<void> {
+  async remove(userId: number, wishId: number) {
     const wish = await this.findById(wishId);
 
     if (userId !== wish.owner.id) {
       throw new ServerException(ErrorCode.WishDeleteForbidden);
     }
-    await this.wishesRepository.delete(wishId);
+    return await this.wishesRepository.delete(wishId);
   }
 
   async copyWish(userId: number, wishId: number) {
@@ -132,7 +132,7 @@ export class WishesService {
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { id, createdAt, updatedAt, owner, ...wish } = await this.findById(wishId);
+      const { id, createdAt, updatedAt, raised, owner, ...wish } = await this.findById(wishId);
       const copiedWish = await this.create(userId, wish);
       
       await this.wishesRepository.update(wishId, { copied: copiedWish.copied + 1});

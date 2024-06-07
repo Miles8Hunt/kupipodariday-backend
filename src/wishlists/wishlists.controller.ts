@@ -6,7 +6,7 @@ import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { WishInterceptor } from '../interceptors/wish.interceptor';
 
 @UseGuards(JwtGuard)
-@Controller('wishlists')
+@Controller('wishlistlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 

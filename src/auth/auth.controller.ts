@@ -2,10 +2,12 @@ import { Controller, Post, Body, UseGuards, Req, UseFilters, UseInterceptors } f
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { User } from '../users/entities/user.entity';
 import { LocalGuard } from './guard/local.guard';
-import { InvalidDataExceptionFilter } from 'src/filter/invalid-data-exception.filter';
+import { InvalidDataExceptionFilter } from '../filter/invalid-data-exception.filter';
 import { UserInterceptor } from '../interceptors/user.interceptor';
+// import { User } from '../users/entities/user.entity';
+import { SignupUserDto } from './dto/signup-user.dto';
+import { SigninUserDto } from './dto/signin-user.dto';
 
 @UseFilters(InvalidDataExceptionFilter)
 @Controller()
@@ -17,14 +19,13 @@ export class AuthController {
 
   @Post('signin')
   @UseGuards(LocalGuard)
-  async signin(@Req() req: Request & { user: User }) {
-    return this.authService.auth(req.user);
+  signin(@Req() { user }): Promise<SigninUserDto> {
+    return this.authService.auth(user);
   }
 
   @UseInterceptors(UserInterceptor)
   @Post('signup')
-  async signup(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.create(createUserDto);
-    return await this.authService.auth(user);
+  signup(@Body() createUserDto: CreateUserDto): Promise<SignupUserDto> {
+    return this.usersService.create(createUserDto);
   }
 }

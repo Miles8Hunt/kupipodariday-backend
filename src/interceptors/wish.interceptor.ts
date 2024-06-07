@@ -18,7 +18,7 @@ export class WishInterceptor implements NestInterceptor {
           });
           
         } else {
-          data?.offers?.map((offer) => {
+          data?.offers?.map((offer: { user: { password: any; }; }) => {
             delete offer.user.password;
             return offer;
           });

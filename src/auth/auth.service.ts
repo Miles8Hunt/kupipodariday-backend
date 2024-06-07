@@ -3,8 +3,9 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { HashService } from '../hash/hash.service';
 import { User } from '../users/entities/user.entity';
-import { ErrorCode } from 'src/exceptions/error-codes';
-import { ServerException } from 'src/exceptions/server.exception';
+import { ErrorCode } from '../exceptions/error-codes';
+import { ServerException } from '../exceptions/server.exception';
+import { SigninUserDto } from './dto/signin-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,11 +15,9 @@ export class AuthService {
     private readonly hashService: HashService,
   ) {}
 
-  async auth(user: User): Promise<any> {
-    const payload = { username: user.username, sub: user.id };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+  async auth(user: User): Promise<SigninUserDto> {
+    const payload = { sub: user.id };
+    return { access_token: this.jwtService.sign(payload) };
   }
 
   async validatePassword(username: string, password: string): Promise<any> {

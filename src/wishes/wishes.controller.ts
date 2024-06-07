@@ -40,7 +40,7 @@ export class WishesController {
 
   @UseGuards(JwtGuard)
   @Post(':id/copy')
-  async copyWish(@Req() { user: { id } }, @Param(':id') wishId: number) {
-    return await this.wishesService.copyWish(id, wishId);
+  async copyWish(@Req() req, @Param('id') id: number): Promise<Wish> {
+    return await this.wishesService.copyWish(req.user.id, id);
   }
 }
